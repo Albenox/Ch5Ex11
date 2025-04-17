@@ -9,7 +9,8 @@
 #include <iostream>
 using namespace std;
 
-void inputChecker(double& populationStart, double& populationIncrease, double& time, char& type);
+void inputChecker(double& populationCount, double& populationIncrease, double& time, char& type);
+void timeLoop(double& populationCount, double& populationIncrease, double& populationEstimate, double& time);
 
 int main()
 {
@@ -34,13 +35,17 @@ int main()
 
     populationIncrease = populationIncrease / 100;
 
+    timeLoop(populationCount, populationIncrease, populationEstimate, time);
+
+}
+
+void timeLoop(double& populationCount, double& populationIncrease, double& populationEstimate, double& time) {
     for (; time > 0; time--) {
         int x = time;
         populationEstimate = populationCount * (1 + populationIncrease);
         populationCount = populationEstimate;
         cout << x << "   " << populationEstimate << endl;
-        }
-
+    }
 }
 
 void inputChecker(double& populationCount,double& populationIncrease, double& time, char& type) {

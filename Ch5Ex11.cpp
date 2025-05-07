@@ -1,88 +1,82 @@
 /*
-    Program File Name: Chapter5Ex11.cpp
+    Program File Name: Ch5Ex11.cpp
     Programmer: Gabriel Inocentes
-    Date: April 17, 2025
-    Requirements:
-    Create a program that predicts the size of a population based on user input
+    Date: May 7, 2025
+    Requirements: Make a program that reads a txt file and displays the data in a sorted way
 */
 
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
 using namespace std;
 
-void inputChecker(double& populationCount, double& populationIncrease, double& time, char& type);
-void timeLoop(double& populationCount, double& populationIncrease, double& populationEstimate, double& time);
+// Declares functions
+void readPopulationData(vector<int>& populations);
+void displayPopulationChart(const vector<int>& populations);
 
-int main()
-{
-    double populationCount;
-    double populationIncrease;
-    double time;
-    double populationEstimate;
-    
-    //Variable to check what type of limitation to look for from the user
-    char type;
+int main() {
+    //Sets vector for population sizes
+    vector<int> populations;
+    //Var to repeat
+    char repeat;
 
-    cout << "What is the current population count of the organisms?" << endl;
-    type = 1;
-    inputChecker(populationCount, populationIncrease, time, type);
-    cout << "What is the  average daily percentage increase to the population count?" << endl;
-    type = 2;
-    inputChecker(populationCount, populationIncrease, time, type);
-    cout << "How long should this prediction account growth for?" << endl;
-    type = 3;
-    inputChecker(populationCount, populationIncrease, time, type);
-    cout << endl;
+    do {
+        // Read and display population data
+        populations.clear();
+        readPopulationData(populations);
 
-    populationIncrease = populationIncrease / 100;
+        //Failsafe if file is not found properly
+        if (populations.empty()) {
+            cout << "Error: No valid population data found in People.txt." << endl;
+            return 1;
+        }
 
-    timeLoop(populationCount, populationIncrease, populationEstimate, time);
+        displayPopulationChart(populations);
 
+        // Repeat option
+        cout << endl << "Would you like to view the chart again? (Y/N): ";
+        cin >> repeat;
+        repeat = toupper(repeat);
+
+    } while (repeat == 'Y');
+
+    return 0;
 }
 
-void timeLoop(double& populationCount, double& populationIncrease, double& populationEstimate, double& time) {
-    for (; time > 0; time--) {
-        int x = time;
-        populationEstimate = populationCount * (1 + populationIncrease);
-        populationCount = populationEstimate;
-        cout << x << "   " << populationEstimate << endl;
+// Function to read population data from file and validate it
+void readPopulationData(vector<int>& populations) {
+    ifstream inputFile("People.txt");
+    //Checks to see if file can even be found/accessed
+    if (!inputFile) {
+        cerr << "Error: Could not open People.txt" << endl;
+        exit(1);
     }
+
+    int population;
+    //While files are being read
+    while (inputFile >> population) {
+        if (population >= 0) { // Ensuring valid population data
+            populations.push_back(population);
+        }
+    }
+    //Closes the file once done
+    inputFile.close();
 }
 
-void inputChecker(double& populationCount,double& populationIncrease, double& time, char& type) {
-    //Refuses if user input invalid
-    if (cin.fail()) {
-        cin.clear();
-        cin.ignore();
-        cout << "Input is invalid, please enter a valid number: " << endl;
-    }
-    else {
-        //If statement once the user input has been validated
-        if (type == 1) {
-            cin >> populationCount;
-            while (populationCount < 2) {
-                cin.clear();
-                cin.ignore();
-                cout << "Input is invalid, please enter a starting population size of 2 or greater: " << endl;
-                cin >> populationCount;
-            }
+// Function to display the population bar chart
+void displayPopulationChart(const vector<int>& populations) {
+    cout << endl << "PRAIRIEVILLE POPULATION GROWTH" << endl;
+    cout << "(each * represents 1,000 people)" << endl;
+
+    int year = 1900;
+    for (int population : populations) {
+        cout << year << " ";
+        for (int i = 0; i < population / 1000; ++i) {
+            cout << "*";
         }
-        else if (type == 2){
-            cin >> populationIncrease;
-            while (populationIncrease < 0) {
-                cin.clear();
-                cin.ignore();
-                cout << "Input is invalid, please enter a positive daily population increase: " << endl;
-                cin >> populationIncrease;
-            }
-        }
-        else if (type == 3){
-            cin >> time;
-            while (time < 1) {
-                cin.clear();
-                cin.ignore();
-                cout << "Input is invalid, please enter a time greater than 1: " << endl;
-                cin >> time;
-            }
-        }
+        cout << endl;
+        year += 20;
     }
 }
